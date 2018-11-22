@@ -21,24 +21,14 @@
   ```
 
 ## How to use
-1. ```
-   git clone https://github.com/jbgrouposs-cloudnative/gdx-frieden.git
-   ```
-2. ```
-   cd gdx-frieden/product
-   ```
-3. ```
-   terraform fmt
-   ```
-4. ```
-   terraform init
-   ```
-5. ```
-   terraform plan
-   ```
-6. ```
-   terraform apply
-   ```
+```
+git clone https://github.com/jbgrouposs-cloudnative/gdx-frieden.git
+cd gdx-frieden/product
+terraform fmt
+terraform init
+terraform plan
+terraform apply
+```
 
 ## CI/CD
 - CircleCIで上記１～５までを実施  
