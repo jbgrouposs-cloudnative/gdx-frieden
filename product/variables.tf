@@ -2,6 +2,7 @@ variable "stage" {
   default = "prod"
 }
 
+# For VPC
 variable "vpcsubnet" {
   default = "192.168.0.0/16"
 }
@@ -44,4 +45,9 @@ variable "enable_dns_hostname" {
 
 variable "enable_dns_support" {
   default = true
+}
+
+# For EKS
+variable "eks_cluster_name" {
+  default = "gdx-cluster"
 }
