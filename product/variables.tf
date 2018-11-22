@@ -22,6 +22,14 @@ variable "enable_nat_gateway" {
   default = true
 }
 
+variable "single_nat_gateway" {
+  default = true
+}
+
+variable "one_nat_gateway_per_az" {
+  default = false
+}
+
 variable "enable_vpn_gateway" {
   default = false
 }
