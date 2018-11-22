@@ -1,0 +1,36 @@
+version: 2
+
+jobs:
+  validate:
+    docker:
+      - image: hashicorp/terraform
+    steps:
+      - checkout
+      - run:
+          name: Change Directory
+          command: "cd product"
+      - run:
+          name: Validate Terraform Formatting
+          command: "[ -z \"$(terraform fmt -write=false)\" ] || {terraform fmt -write=false -diff; ext 1; }"
+  plan:
+    docker:
+      - image: hashicorp/terraform
+    steps:
+      - checkout
+      - run:
+          name: Change Directory
+          command: "cd product"
+      - run:
+          name: Initialize Terraform
+          command: "terraform init"
+      - run:
+          name: Plan Terraform
+          command: "terraform plan"
+workflows:
+  version: 2
+  test:
+    jobs:
+      - validate
+      - plan:
+        requires:
+          - validate
