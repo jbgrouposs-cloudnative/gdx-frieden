@@ -1,0 +1,7 @@
+*~
+*.bk
+*.tmp
+
+**/.terraform/**
+*.tfstate
+*.tfstate.json
