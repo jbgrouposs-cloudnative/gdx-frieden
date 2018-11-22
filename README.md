@@ -7,20 +7,38 @@
 > 艦内工場にはキッドがかき集めたジャンクパーツが山積みされており、これを用いて損壊したX、エアマスター、レオパルドをそれぞれガンダムXディバイダー、ガンダムエアマスターバースト、ガンダムレオパルドデストロイに強化している。  
 > フリーデンは新連邦軍が姿を現して以降、これらと幾度も激戦を繰り広げた。その後宇宙革命軍に拉致されたティファを救出するためにガロードが宇宙へシャトルで飛びだつ際、これを妨害する新連邦軍の移動要塞に体当たり攻撃を仕掛け大破した。  
 
-
 ## 設定
 - S3bucket
   - gdx-frieden
 - tfstate
   - /terraform/${STAGE}/terraform.tfstate
+- AWS credentials
+  - ~/.aws/credentials
+  ```
+  [gdx]
+  aws_access_key_id = <your access key id>
+  aws_secret_access_key = <your secret access key>
+  ```
 
 ## How to use
-1. `git clone https://github.com/jbgrouposs-cloudnative/gdx-frieden.git`
-2. `cd gdx-frieden/product`
-3. `terraform fmt`
-4. `terraform init`
-5. `terraform plan`
-6. `terraform apply`
+1. ```
+   git clone https://github.com/jbgrouposs-cloudnative/gdx-frieden.git
+   ```
+2. ```
+   cd gdx-frieden/product
+   ```
+3. ```
+   terraform fmt
+   ```
+4. ```
+   terraform init
+   ```
+5. ```
+   terraform plan
+   ```
+6. ```
+   terraform apply
+   ```
 
 ## CI/CD
 - CircleCIで上記１～５までを実施  
