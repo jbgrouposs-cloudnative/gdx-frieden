@@ -6,7 +6,7 @@ jobs:
       - image: hashicorp/terraform
     steps:
       - checkout
-        -run:
+      - run:
           name: Validate Terraform Formatting
           command: terraform fmt
           working_directory: product
@@ -30,5 +30,5 @@ workflows:
     jobs:
       - validate
       - plan:
-        requires:
-          - validate
+          requires:
+            - validate
