@@ -20,7 +20,7 @@ module "vpc" {
 module "eks" {
   source       = "terraform-aws-modules/eks/aws"
   cluster_name = "${var.eks_cluster_name}-${var.stage}"
-  subnets      = "${var.private_subnets}"
+  subnets      = "${module.vpc.private_subnets}"
 
   tags = {
     Stage = "${var.stage}"
