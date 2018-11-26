@@ -16,3 +16,15 @@ module "vpc" {
   enable_dns_hostnames = "${var.enable_dns_hostname}"
   enable_dns_support   = "${var.enable_dns_support}"
 }
+
+module "eks" {
+  source       = "terraform-aws-modules/eks/aws"
+  cluster_name = "${var.eks_cluster_name}-${var.stage}"
+  subnets      = "${module.vpc.private_subnets}"
+
+  tags = {
+    Stage = "${var.stage}"
+  }
+
+  vpc_id = "${module.vpc.vpc_id}"
+}
