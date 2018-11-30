@@ -21,7 +21,8 @@ module "eks" {
   source             = "terraform-aws-modules/eks/aws"
   cluster_name       = "${var.eks_cluster_name}-${var.stage}"
   subnets            = "${module.vpc.private_subnets}"
-  worker_group_count = 0
+  worker_groups = "${local.worker_groups}"
+  worker_group_count = 1
 
   tags = {
     Stage = "${var.stage}"
@@ -33,4 +34,16 @@ module "eks" {
 module "ecr" {
   source   = "../modules/ecr"
   ecr_name = "${var.ecr_name}"
+}
+
+locals {
+  worker_groups = [
+    {
+      instance_type       = "t2.small"
+      subnets             = "${join(",", module.vpc.private_subnets)}"
+    },
+  ]
+  tags = {
+    Stage = "${var.stage}"
+  }
 }
