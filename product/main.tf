@@ -18,13 +18,19 @@ module "vpc" {
 }
 
 module "eks" {
-  source       = "terraform-aws-modules/eks/aws"
-  cluster_name = "${var.eks_cluster_name}-${var.stage}"
-  subnets      = "${module.vpc.private_subnets}"
+  source             = "terraform-aws-modules/eks/aws"
+  cluster_name       = "${var.eks_cluster_name}-${var.stage}"
+  subnets            = "${module.vpc.private_subnets}"
+  worker_group_count = 0
 
   tags = {
     Stage = "${var.stage}"
   }
 
   vpc_id = "${module.vpc.vpc_id}"
+}
+
+module "ecr" {
+  source   = "../modules/ecr"
+  ecr_name = "${var.ecr_name}"
 }

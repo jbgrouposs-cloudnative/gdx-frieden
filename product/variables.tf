@@ -51,3 +51,8 @@ variable "enable_dns_support" {
 variable "eks_cluster_name" {
   default = "gdx-cluster"
 }
+
+# For ECR
+variable "ecr_name" {
+  default = "gdx-ecr"
+}
