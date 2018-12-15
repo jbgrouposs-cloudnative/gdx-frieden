@@ -52,6 +52,14 @@ variable "eks_cluster_name" {
   default = "gdx-cluster"
 }
 
+variable "kubeconfig_aws_authenticator_env_variables" {
+  type = "map"
+
+  default = {
+    "AWS_PROFILE" = "gdx"
+  }
+}
+
 # For ECR
 variable "ecr_name" {
   default = "gdx-ecr"

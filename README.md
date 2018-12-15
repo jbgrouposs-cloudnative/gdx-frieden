@@ -30,6 +30,9 @@ terraform plan
 terraform apply
 ```
 
+### ローカルでkubectlコマンドを試す場合
+%HOME%\.kube\configにkubeconfig_gdx-cluster-prodをマージする
+
 ## CI/CD
 - CircleCIで上記１～５までを実施  
 - 手動で`terraform apply`を実施

@@ -18,17 +18,17 @@ module "vpc" {
 }
 
 module "eks" {
-  source             = "terraform-aws-modules/eks/aws"
-  cluster_name       = "${var.eks_cluster_name}-${var.stage}"
-  subnets            = "${module.vpc.private_subnets}"
-  worker_groups = "${local.worker_groups}"
-  worker_group_count = 1
+  source                                     = "terraform-aws-modules/eks/aws"
+  cluster_name                               = "${var.eks_cluster_name}-${var.stage}"
+  subnets                                    = "${module.vpc.private_subnets}"
+  worker_groups                              = "${local.worker_groups}"
+  worker_group_count                         = 1
+  vpc_id                                     = "${module.vpc.vpc_id}"
+  kubeconfig_aws_authenticator_env_variables = "${var.kubeconfig_aws_authenticator_env_variables}"
 
   tags = {
     Stage = "${var.stage}"
   }
-
-  vpc_id = "${module.vpc.vpc_id}"
 }
 
 module "ecr" {
@@ -39,10 +39,11 @@ module "ecr" {
 locals {
   worker_groups = [
     {
-      instance_type       = "t2.small"
-      subnets             = "${join(",", module.vpc.private_subnets)}"
+      instance_type = "t2.small"
+      subnets       = "${join(",", module.vpc.private_subnets)}"
     },
   ]
+
   tags = {
     Stage = "${var.stage}"
   }
