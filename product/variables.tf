@@ -61,7 +61,7 @@ variable "kubeconfig_aws_authenticator_env_variables" {
 }
 
 variable "eks_worker_instance_type" {
-  default = "a1.large"
+  default = "t3.medium"
 }
 
 # For ECR
