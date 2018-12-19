@@ -39,7 +39,7 @@ module "ecr" {
 locals {
   worker_groups = [
     {
-      instance_type = "t2.small"
+      instance_type = "${var.eks_worker_instance_type}"
       subnets       = "${join(",", module.vpc.private_subnets)}"
     },
   ]
@@ -47,4 +47,15 @@ locals {
   tags = {
     Stage = "${var.stage}"
   }
+}
+
+resource "aws_iam_policy" "ingress-controller-iam-policy" {
+  name = "ingress-controller-iam-policy"
+  policy = "${file("policy/ingressController-iam-policy")}"
+}
+
+
+resource "aws_iam_role_policy_attachment" "workers-EKS-ALB-policy" {
+  role = "${module.eks.worker_iam_role_name}"
+  policy_arn = "${aws_iam_policy.ingress-controller-iam-policy.arn}"
 }
