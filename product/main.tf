@@ -19,10 +19,11 @@ module "vpc" {
 
 module "eks" {
   source                                     = "terraform-aws-modules/eks/aws"
+  version                                    = "2.0.0"
   cluster_name                               = "${var.eks_cluster_name}-${var.stage}"
   subnets                                    = "${module.vpc.private_subnets}"
   worker_groups                              = "${local.worker_groups}"
-  worker_group_count                         = 1
+  worker_group_count                         = "1"
   vpc_id                                     = "${module.vpc.vpc_id}"
   kubeconfig_aws_authenticator_env_variables = "${var.kubeconfig_aws_authenticator_env_variables}"
 
@@ -36,11 +37,35 @@ module "ecr" {
   ecr_name = "${var.ecr_name}"
 }
 
+module "web_sg" {
+  source = "terraform-aws-modules/security-group/aws//modules/http-80"
+
+  name        = "web-server"
+  description = "Security group for web-server with HTTP ports open within VPC"
+  vpc_id      = "${module.vpc.vpc_id}"
+
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+}
+
+module "alb" {
+  source                   = "terraform-aws-modules/alb/aws"
+  load_balancer_name       = "gdx-${var.stage}"
+  security_groups          = ["${module.web_sg.this_security_group_id}", "${module.eks.worker_security_group_id}"]
+  subnets                  = "${module.vpc.public_subnets}"
+  vpc_id                   = "${module.vpc.vpc_id}"
+  http_tcp_listeners       = "${list(map("port", "80", "protocol", "HTTP"))}"
+  http_tcp_listeners_count = "1"
+  target_groups            = "${list(map("name", "gdx-${var.stage}", "backend_protocol", "HTTP", "backend_port", "30000"))}"
+  target_groups_count      = "1"
+  logging_enabled          = false
+}
+
 locals {
   worker_groups = [
     {
-      instance_type = "${var.eks_worker_instance_type}"
-      subnets       = "${join(",", module.vpc.private_subnets)}"
+      instance_type     = "${var.eks_worker_instance_type}"
+      subnets           = "${join(",", module.vpc.private_subnets)}"
+      target_group_arns = "${join(",", module.alb.target_group_arns)}"
     },
   ]
 

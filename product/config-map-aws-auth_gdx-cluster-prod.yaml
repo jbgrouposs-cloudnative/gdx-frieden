@@ -5,7 +5,7 @@ metadata:
   namespace: kube-system
 data:
   mapRoles: |
-    - rolearn: arn:aws:iam::659905521232:role/gdx-cluster-prod20181124073211189300000002
+    - rolearn: arn:aws:iam::659905521232:role/gdx-cluster-prod20190107055026349200000007
       username: system:node:{{EC2PrivateDNSName}}
       groups:
         - system:bootstrappers
