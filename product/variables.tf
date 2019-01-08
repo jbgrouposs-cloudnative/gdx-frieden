@@ -60,6 +60,10 @@ variable "kubeconfig_aws_authenticator_env_variables" {
   }
 }
 
+variable "eks_worker_instance_type" {
+  default = "t3.medium"
+}
+
 # For ECR
 variable "ecr_name" {
   default = "gdx-ecr"
