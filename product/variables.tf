@@ -66,5 +66,17 @@ variable "eks_worker_instance_type" {
 
 # For ECR
 variable "ecr_name" {
-  default = "gdx-ecr"
+  default = "gdx-prod"
+}
+
+variable "rds_cluster_name" {
+  default = "gdx-cluster"
+}
+
+variable "rds_username" {
+  default = "gdx"
+}
+
+variable "rds_password" {
+  default = "M5d2gUNVQYBRs5kyccTEmJ3A"
 }

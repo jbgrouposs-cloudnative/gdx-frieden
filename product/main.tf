@@ -15,6 +15,16 @@ module "vpc" {
 
   enable_dns_hostnames = "${var.enable_dns_hostname}"
   enable_dns_support   = "${var.enable_dns_support}"
+
+  tags = "${merge(local.tags, map("kubernetes.io/cluster/${var.eks_cluster_name}","shared"))}"
+
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" = ""
+  }
+
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" = ""
+  }
 }
 
 module "eks" {
@@ -83,3 +93,25 @@ resource "aws_iam_role_policy_attachment" "workers-EKS-ALB-policy" {
   role       = "${module.eks.worker_iam_role_name}"
   policy_arn = "${aws_iam_policy.ingress-controller-iam-policy.arn}"
 }
+
+/*
+resource "aws_rds_cluster" "gdx" {
+  cluster_identifier      = "${var.rds_cluster_name}"
+  engine                  = "aurora-postgresql"
+  engine_mode             = "serverless"
+  availability_zones      = "${module.vpc.azs}"
+  database_name           = "gdx-${var.stage}"
+  master_username         = "${var.rds_username}"
+  master_password         = "${var.rds_password}"
+  backup_retention_period = 5
+  preferred_backup_window = "07:00-09:00"
+
+  scaling_configuration {
+    auto_pause               = true
+    max_capacity             = 5
+    min_capacity             = 1
+    seconds_until_auto_pause = 3600
+  }
+}
+*/
+
