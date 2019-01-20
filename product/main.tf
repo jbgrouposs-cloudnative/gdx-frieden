@@ -16,14 +16,14 @@ module "vpc" {
   enable_dns_hostnames = "${var.enable_dns_hostname}"
   enable_dns_support   = "${var.enable_dns_support}"
 
-  tags = "${merge(local.tags, map("kubernetes.io/cluster/${var.eks_cluster_name}","shared"))}"
+  tags = "${merge(local.tags, map("kubernetes.io/cluster/${var.eks_cluster_name}-${var.stage}","shared"))}"
 
   private_subnet_tags = {
-    "kubernetes.io/role/internal-elb" = ""
+    "kubernetes.io/role/internal-elb" = "1"
   }
 
   public_subnet_tags = {
-    "kubernetes.io/role/elb" = ""
+    "kubernetes.io/role/elb" = "1"
   }
 }
 
