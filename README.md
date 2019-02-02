@@ -36,3 +36,8 @@ terraform apply
 ## CI/CD
 - CircleCIで上記１～５までを実施  
 - 手動で`terraform apply`を実施
+
+## Install Istio
+```
+kubectl apply -f product/yaml/istio.yaml
+```
