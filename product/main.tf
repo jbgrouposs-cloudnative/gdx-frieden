@@ -76,6 +76,7 @@ locals {
       instance_type     = "${var.eks_worker_instance_type}"
       subnets           = "${join(",", module.vpc.private_subnets)}"
       target_group_arns = "${join(",", module.alb.target_group_arns)}"
+      asg_max_size          = 10
     },
   ]
 
