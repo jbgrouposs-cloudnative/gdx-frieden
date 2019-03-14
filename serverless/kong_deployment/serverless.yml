@@ -1,4 +1,4 @@
-service: kong-deployment
+service: kong-deployment-func
 
 provider:
   name: aws
@@ -11,11 +11,24 @@ provider:
       Action:
         - "dynamodb:*"
       Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - "secretsmanager:GetSecretValue"
+      Resource: "arn:aws:secretsmanager:us-west-2:659905521232:secret:gdx-dome-secrets-BTb9cx"
 
 functions:
+  deployment_dynamodb:
+    handler: handler.deployment_dynamodb
+    events:
+      - stream:
+          type: dynamodb
+          arn: arn:aws:dynamodb:us-west-2:659905521232:table/GDXDomeDynamoDB/stream/2019-02-26T05:59:09.183
+    environment:
+      KONG_ADMIN_URL: http://af9a579d31c9411e981860af6f50b455-1199545367.us-west-2.elb.amazonaws.com:50080
+      KUBE_ADMIN_URL: https://01995CAFFDAF896DFF8C478741FE08E1.sk1.us-west-2.eks.amazonaws.com
+    
   deployment:
     handler: handler.deployment
-
     events:
       - http:
           path: deployment
@@ -25,51 +38,5 @@ functions:
               querystrings:
                 api_name: true
                 api_version: true
-
     environment:
-      KONG_ADMIN_URL: http://kong-ingress-controller:8001
-
-#    The following are a few example events you can configure
-#    NOTE: Please make sure to change your handler code to work with those events
-#    Check the event documentation for details
-#    events:
-#      - http:
-#          path: users/create
-#          method: get
-#      - s3: ${env:BUCKET}
-#      - schedule: rate(10 minutes)
-#      - sns: greeter-topic
-#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
-#      - alexaSkill: amzn1.ask.skill.xx-xx-xx-xx
-#      - alexaSmartHome: amzn1.ask.skill.xx-xx-xx-xx
-#      - iot:
-#          sql: "SELECT * FROM 'some_topic'"
-#      - cloudwatchEvent:
-#          event:
-#            source:
-#              - "aws.ec2"
-#            detail-type:
-#              - "EC2 Instance State-change Notification"
-#            detail:
-#              state:
-#                - pending
-#      - cloudwatchLog: '/aws/lambda/hello'
-#      - cognitoUserPool:
-#          pool: MyUserPool
-#          trigger: PreSignUp
-
-#    Define function environment variables here
-#    environment:
-#      variable2: value2
-
-# you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+      KONG_ADMIN_URL: http://a64ac7608365d11e981860af6f50b455-1957098408.us-west-2.elb.amazonaws.com:8001

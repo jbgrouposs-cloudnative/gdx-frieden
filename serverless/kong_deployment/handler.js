@@ -1,16 +1,37 @@
 'use strict';
 
-var aws = require('aws-sdk');
-var documentClient = new aws.DynamoDB.DocumentClient();
-var axios = require('axios');
+const main = require('./main');
 
-// Kong管理APIエンドポイント
-var kongAdminUrl = process.env.KONG_ADMIN_URL;
+// DynamoDBのデータ更新ハンドラー
+module.exports.deployment_dynamodb = (event, context) => {
 
-// 共通エラーハンドラー
-var error_handler = (err, context) => {
-  console.log(err);
-  context.fail();
+  // レコード単位で並列に処理を行う
+  Promise.all(event.Records.map(async r => {
+    const eventName = r.eventName;
+    const provider = r.dynamodb.Keys.provider.S;
+    const object = r.dynamodb.Keys.object.S;
+
+    console.log(`eventName : ${eventName}`);
+    console.log(`provider  : ${provider}`);
+    console.log(`object    : ${object}`);
+
+    if (object === 'ENDPOINT') {
+      if (eventName === 'INSERT') {
+        await main.handleInsert(provider);
+      } else if (eventName === 'MODIFY') {
+        await main.handleModify(provider);
+      } else if (eventName === 'REMOVE') {
+        await main.handleRemove(provider);
+      } else {
+        console.log(`${eventName} not supported.`);
+      }
+    }
+    
+  })).then(() => {
+    context.succeed('OK');
+  }).catch((err) => {
+    context.fail(err);
+  });
 };
 
 module.exports.deployment = (event, context) => {
@@ -32,28 +53,28 @@ module.exports.deployment = (event, context) => {
     } else {
       var container_info = data.Item.container_info;
 
-      endpoints.forEach(function (endpoint) {
-        // サービスを作成or更新
-        axios.put(`${kongAdminUrl}/services/${api_name}-${api_version}`, {
-          name: `${api_name}-${api_version}`,
-          protocol: 'http',
-          host: container_info.name,
-          port: container_info.port
+      // サービスを作成or更新
+      axios.put(`${kongAdminUrl}/services/${api_name}-${api_version}`, {
+        name: `${api_name}-${api_version}`,
+        protocol: 'http',
+        host: container_info.name,
+        port: container_info.port
+      }).then(function (res) {
+        console.log(res);
+
+        // サービスに対するルートを作成or更新
+        axios.put(`${kongAdminUrl}/routes/${api_name}-${api_version}`, {
+          protocols: ['http'],
+          paths: [`/${api_name}/${api_version}`],
+          service: {
+            id: res.data.id
+          }
         }).then(function (res) {
           console.log(res);
+          context.succeed("OK");
+        }).catch(err => error_handler(err, context));
 
-          // サービスに対するルートを作成or更新
-          axios.put(`${kongAdminUrl}/services/${res.id}/routes`, {
-            protocols: ['http'],
-            paths: `/${api_name}/${api_version}`
-          }).then(function (res) {
-            console.log(res);
-            context.succeed();
-          }).catch(err=>error_handler(err, context));
-
-        }).catch(err=>error_handler(err, context));
-
-      });
+      }).catch(err => error_handler(err, context));
     }
   });
 };
